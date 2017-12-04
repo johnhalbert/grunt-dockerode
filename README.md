@@ -25,7 +25,7 @@ In your project's Gruntfile, add a section named `dockerode` to the data object 
 ```js
 grunt.initConfig({
   dockerode: {
-    cmd: '', // Docker command
+    command: '', // Docker command
     options: {
       // Configures connection to Docker
     },
@@ -233,5 +233,30 @@ Executes command in given container.  Notable here, the command is commonly used
 }
 ```
 
+### Usage Examples - tag
+
+Like `run`, except allows running detached containers.
+
+```js
+{
+  command: 'create-container',
+  opts: {
+    name: 'my-container',
+    Image: 'nginx:latest',
+    ExposedPorts: {
+      '80/tcp': {}
+    },
+    HostConfig: {
+      PortBindings: {
+        '80/tcp': [{
+          HostPort: 8080
+        }]
+      }
+    }
+  }
+}
+```
+
 ## Release History
-_(Nothing yet)_
+- 0.1.1 - Adds `create-container` support.
+- 0.1.0 - Initial release

@@ -40,7 +40,7 @@ module.exports = function(grunt) {
     const done = this.async();
 
     if (this.data.command && isDockerCommand(this.data.command)) {
-      runDockerCommand(this.data.cmd, data, options)
+      runDockerCommand(this.data.command, data, options)
         .catch(err => grunt.log.error(err.message));
     }
     else if (!this.data.command)
@@ -56,7 +56,8 @@ module.exports = function(grunt) {
      */
     function isDockerCommand(cmd) {
       const commands = [ 'run', 'pull', 'push', 'build', 'stop', 'start', 'kill', 
-        'ps', 'rm', 'inspect', 'exec', 'restart', 'logs', 'stats', 'tag' ];
+        'ps', 'rm', 'inspect', 'exec', 'restart', 'logs', 'stats', 'tag',
+        'create-container' ];
 
       return ~commands.indexOf(cmd);
     }
@@ -176,6 +177,10 @@ module.exports = function(grunt) {
                 grunt.log.writeln(columnify(dataObj));
               });
             });
+        case 'create-container':
+          return docker.createContainer(args.opts)
+            .then(container => container.start())
+            .then(done);
       }
     }
 
