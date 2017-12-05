@@ -41,7 +41,10 @@ module.exports = function(grunt) {
 
     if (this.data.command && isDockerCommand(this.data.command)) {
       runDockerCommand(this.data.command, data, options)
-        .catch(err => grunt.log.error(err.message));
+        .catch(err => {
+          grunt.fail.warn(err.message);
+          done();
+        })
     }
     else if (!this.data.command)
       throw new Error(`No Docker command supplied!`);
