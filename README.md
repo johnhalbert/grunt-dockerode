@@ -258,5 +258,6 @@ Like `run`, except allows running detached containers.
 ```
 
 ## Release History
+- 0.1.2 - Fixes issue with `pull` not passing authconfig to `dockerode` method properly.
 - 0.1.1 - Adds `create-container` support.
 - 0.1.0 - Initial release

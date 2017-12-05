@@ -1,7 +1,7 @@
 {
   "name": "grunt-dockerode",
   "description": "Grunt plugin providing dockerode support.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "homepage": "https://github.com/johnhalbert/grunt-dockerode",
   "author": {
     "name": "John Halbert",

@@ -80,7 +80,7 @@ module.exports = function(grunt) {
             .then(done);
         case 'pull':
           curTask = `Pulling ${args.repoTag}`;
-          return docker.pull(args.repoTag, args.opts)
+          return docker.pull(args.repoTag, args.opts, null, args.authconfig)
             .then(handleReadStream);
         case 'push':
           curTask = `Pushing ${args.name}`;
