@@ -133,8 +133,11 @@ module.exports = function(grunt) {
               done();
             });
         case 'rm':
-          // rm is not a function
-          return;
+          return docker.getContainer(args.id).remove(args.opts)
+            .then(result => {
+              grunt.log.ok(result.output || 'Success!');
+              done();
+            });
         case 'inspect':
           return docker.getContainer(args.id)[cmd](args.opts)
             .then(result => {
