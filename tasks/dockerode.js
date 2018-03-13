@@ -101,7 +101,7 @@ module.exports = function(grunt) {
           curTask = `Building ${args.opts && args.opts.t ? args.opts.t : 'docker image'}`;
           const { context, src } = args;
           return docker.buildImage({ context, src }, args.opts)
-            .then(handleReadStream);
+            .then(stream => handleReadStream(stream, args.opts));
         case 'ps':
           return docker.listContainers(args.opts)
             .then(containers => {
@@ -193,31 +193,45 @@ module.exports = function(grunt) {
     /**
      * Handles reading stream, displaying busy animation and parsing errors
      * @param {ReadStream} stream ReadStream returned from docker modem
+     * @param {Object} opts Optional task-specific options object
      * @return {void}
      */
-    function handleReadStream(stream) {
-      // Errors can still appear in the response from the docker server even
-      // though the response code suggests success. Stream needs to be parsed
-      // in order to look for error messages.
-      const errorStream = JSONStream.parse('error')
-      errorStream.on('data', errMsg => {
-        readline.cursorTo(process.stdout, 0);
-        process.stdout.write('');
-        throw new Error(errMsg);
-      });
-      stream.pipe(errorStream);
-      
-      // Shows animation while the stream is being processed
-      startCliSpinner();
+    function handleReadStream(stream, opts) {
+      // Print the stream in requested by the user
+      if (opts && opts.verbose) {
+        const verboseStream = JSONStream.parse('stream')
+        verboseStream.on('data', message => grunt.log.write(message))
+        verboseStream.on('end', _=> {
+          grunt.log.ok(`${curTask}: success!`);
+          done();
+        });
+        stream.pipe(verboseStream);
+      }
 
-      // If no error messages have appeared by the time the stream ends
-      // we can get rid of the spinner and display a success message.
-      stream.on('end', function() {
-        clearCliSpinner();
-        readline.cursorTo(process.stdout, 0);
-        grunt.log.ok(`${curTask}: success!`);
-        done();
-      });
+      else {
+        // Errors can still appear in the response from the docker server even
+        // though the response code suggests success. Stream needs to be parsed
+        // in order to look for error messages.
+        const errorStream = JSONStream.parse('error')
+        errorStream.on('data', errMsg => {
+          readline.cursorTo(process.stdout, 0);
+          process.stdout.write('');
+          throw new Error(errMsg);
+        });
+        stream.pipe(errorStream);
+        
+        // Shows animation while the stream is being processed
+        startCliSpinner();
+
+        // If no error messages have appeared by the time the stream ends
+        // we can get rid of the spinner and display a success message.
+        stream.on('end', function() {
+          clearCliSpinner();
+          readline.cursorTo(process.stdout, 0);
+          grunt.log.ok(`${curTask}: success!`);
+          done();
+        });
+      }
     }
 
     /**
