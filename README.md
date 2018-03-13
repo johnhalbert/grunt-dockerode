@@ -97,12 +97,15 @@ Command examples below will contain all additional configuration properties that
 
 Building requires a `context` and `src` be provided.  Additional opts can be provided per the Docker API.  `dockerode` looks for a `Dockerfile` at the root of the directory structure provided by the `src` option.  If this is not the case, a custom dockerfile location can be passed to opts, relative to the root of the src directories.
 
+If you would like to see the normal output from the Docker build process, you can do so by passing the `verbose` option to `opts`.  This is helpful for debugging, or if your build takes a long time to complete.
+
 ```js
 {
   command: 'build',
   context: __dirname,
   src: [ './**' ],
   opts: {
+    verbose: true,
     t: 'tagname',
     dockerfile: 'customfile'
   }
